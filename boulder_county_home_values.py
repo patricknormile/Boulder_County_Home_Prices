@@ -193,6 +193,12 @@ predictors = main_df.drop(['Time Adjust Sales Price'], axis=1)
 target.shape
 predictors.shape
 
+from sklearn.model_selection import train_test_split
+
+predictors = np.array(predictors)
+target = np.array(target)
+
+X_train, X_test, y_train, y_test = train_test_split(predictors, target, test_size=0.25, random_state=50)
 
 """
 
@@ -214,6 +220,73 @@ model_1.add(Dense(50, activation='relu', input_shape=(n_cols,)))
 model_1.add(Dense(1))
 
 
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.callbacks import EarlyStopping
+#import keras
+#from keras.layers import Dense
+#from keras.models import Sequential
+#from keras.models import load_model
+
+
+model_1 = Sequential()
+n_cols = predictors.shape[1]
+#first model start out with one hidden layer with 50 nodes
+model_1.add(Dense(50, activation='relu', input_shape=(n_cols,)))
+model_1.add(Dense(1))
+model_1.compile(optimizer='adam', loss='mean_squared_error')
+
+early_stopping_monitor = EarlyStopping(patience=3)
+
+model_1_training = model_1.fit(X_train, y_train, validation_split=0.3, epochs = 30, callbacks=[early_stopping_monitor])
+
+""""""
+model_2 = Sequential()
+#second model two hidden layer with 50 nodes
+model_2.add(Dense(50, activation='relu', input_shape=(n_cols,)))
+model_2.add(Dense(50, activation='relu'))
+model_2.add(Dense(1))
+model_2.compile(optimizer='adam', loss='mean_squared_error')
+
+early_stopping_monitor = EarlyStopping(patience=3)
+
+model_2_training = model_2.fit(X_train, y_train, validation_split=0.3, epochs = 30, callbacks=[early_stopping_monitor])
+
+model_3 = Sequential()
+#3rd model add more nodes
+model_3.add(Dense(250, activation='relu', input_shape=(n_cols,)))
+model_3.add(Dense(250, activation='relu'))
+model_3.add(Dense(1))
+model_3.compile(optimizer='adam', loss='mean_squared_error')
+
+
+model_3_training = model_3.fit(X_train, y_train, validation_split=0.3, epochs = 30, callbacks=[early_stopping_monitor])
+
+
+
+model_4 = Sequential()
+#4th model in between
+model_4.add(Dense(150, activation='relu', input_shape=(n_cols,)))
+model_4.add(Dense(150, activation='relu'))
+model_4.add(Dense(1))
+model_4.compile(optimizer='adam', loss='mean_squared_error')
+
+
+model_4_training = model_4.fit(X_train, y_train, validation_split=0.3, epochs = 30, callbacks=[early_stopping_monitor])
+
+
+
+plt.plot(model_1_training.history['val_loss'], 'r', model_2_training.history['val_loss'], 'b', 
+         model_3_training.history['val_loss'], 'g', model_4_training.history['val_loss'], 'black')
+plt.xlabel('Epochs')
+plt.ylabel('Validation score')
+plt.show()
+
+
+print(model_1.evaluate(x=X_test, y=y_test)** 0.5)
+print(model_2.evaluate(x=X_test, y=y_test)** 0.5)
+print(model_3.evaluate(x=X_test, y=y_test)** 0.5)
+print(model_4.evaluate(x=X_test, y=y_test)** 0.5)
 
 
 
@@ -221,6 +294,61 @@ model_1.add(Dense(1))
 
 
 
+"""try again with mean absolute error"""
+model_1 = Sequential()
+n_cols = predictors.shape[1]
+#first model start out with one hidden layer with 50 nodes
+model_1.add(Dense(50, activation='relu', input_shape=(n_cols,)))
+model_1.add(Dense(1))
+model_1.compile(optimizer='adam', loss='mean_absolute_error')
+
+early_stopping_monitor = EarlyStopping(patience=3)
+
+model_1_training = model_1.fit(X_train, y_train, validation_split=0.3, epochs = 30, callbacks=[early_stopping_monitor])
+model_2 = Sequential()
+#second model two hidden layer with 50 nodes
+model_2.add(Dense(50, activation='relu', input_shape=(n_cols,)))
+model_2.add(Dense(50, activation='relu'))
+model_2.add(Dense(1))
+model_2.compile(optimizer='adam', loss='mean_absolute_error')
+
+early_stopping_monitor = EarlyStopping(patience=3)
+
+model_2_training = model_2.fit(X_train, y_train, validation_split=0.3, epochs = 30, callbacks=[early_stopping_monitor])
+
+model_3 = Sequential()
+#3rd model add more nodes
+model_3.add(Dense(250, activation='relu', input_shape=(n_cols,)))
+model_3.add(Dense(250, activation='relu'))
+model_3.add(Dense(1))
+model_3.compile(optimizer='adam', loss='mean_absolute_error')
+
+
+model_3_training = model_3.fit(X_train, y_train, validation_split=0.3, epochs = 30, callbacks=[early_stopping_monitor])
+
+model_4 = Sequential()
+#4th model in between
+model_4.add(Dense(150, activation='relu', input_shape=(n_cols,)))
+model_4.add(Dense(150, activation='relu'))
+model_4.add(Dense(1))
+model_4.compile(optimizer='adam', loss='mean_absolute_error')
+
+
+model_4_training = model_4.fit(X_train, y_train, validation_split=0.3, epochs = 30, callbacks=[early_stopping_monitor])
+
+### using MAE works better since there are many outlier home prices
+plt.plot(model_1_training.history['val_loss'], 'r', model_2_training.history['val_loss'], 'b', 
+         model_3_training.history['val_loss'], 'g', model_4_training.history['val_loss'], 'black')
+plt.xlabel('Epochs')
+plt.ylabel('Validation score')
+plt.show()
+
+print(model_1.evaluate(x=X_test, y=y_test))
+print(model_2.evaluate(x=X_test, y=y_test))
+print(model_3.evaluate(x=X_test, y=y_test))
+print(model_4.evaluate(x=X_test, y=y_test))
+
+#### This suggests more nodes is better
 
 
 
