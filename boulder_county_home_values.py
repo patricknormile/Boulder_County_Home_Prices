@@ -351,4 +351,29 @@ print(model_4.evaluate(x=X_test, y=y_test))
 #### This suggests more nodes is better
 
 
+model_5 = Sequential()
+#5th add more nodes and another layer
+model_5.add(Dense(300, activation='relu', input_shape=(n_cols,)))
+model_5.add(Dense(300, activation='relu'))
+model_5.add(Dense(200, activation='relu'))
+model_5.add(Dense(1))
+model_5.compile(optimizer='adam', loss='mean_absolute_error')
+model_5_training = model_5.fit(X_train, y_train, validation_split=0.3, epochs = 30, callbacks=[early_stopping_monitor])
+
+
+
+print(model_1.evaluate(x=X_test, y=y_test))
+print(model_2.evaluate(x=X_test, y=y_test))
+print(model_3.evaluate(x=X_test, y=y_test))
+print(model_4.evaluate(x=X_test, y=y_test))
+print(model_5.evaluate(x=X_test, y=y_test))
+
+plt.plot(model_1_training.history['val_loss'], 'r', model_2_training.history['val_loss'], 'b', 
+         model_3_training.history['val_loss'], 'g', model_4_training.history['val_loss'], 'black',
+         model_5_training.history['val_loss'], 'orange')
+plt.xlabel('Epochs')
+plt.ylabel('Validation score')
+plt.show()
+
+""" 5th model does way better, still significant room for improvement. average error is about $100,000 with this model """
 
